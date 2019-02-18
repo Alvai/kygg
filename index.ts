@@ -88,7 +88,20 @@ const getPokemon = async () => {
 schedule(
   CRON_SCHEDULE as string,
   async () => {
-    console.log("job is running");
+    const numberOfCommits = Math.floor(Math.random() * 8) + 1;
+    for (let index = 0; index <= numberOfCommits; index++) {
+      const headMaster = await getHeadMaster();
+      const lastCommit = await getCommit(headMaster.object.sha);
+      // At this point, you can create any function you want to provide the content for the commit
+      const pokemon = await getPokemon();
+      const newTree = await createTree(lastCommit.tree.sha, pokemon.content);
+      const addedCommit = await createCommit({
+        message: `${pokemon.currentPoke} said Hi !`,
+        parents: [headMaster.object.sha],
+        tree: newTree.sha
+      });
+      await push(addedCommit.sha);
+    }
   },
   {}
 );
