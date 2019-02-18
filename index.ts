@@ -63,6 +63,28 @@ const push = async (sha: string) => {
   return pushed.data;
 };
 
+// Get content from Pokeapi
+const getPokemon = async () => {
+  const index = Math.floor(Math.random() * 807) + 1;
+  const res = await axios.get(`https://pokeapi.co/api/v2/pokemon/${index}`);
+  const {
+    name,
+    sprites: { front_default }
+  } = res.data;
+  const content = await github.get(
+    `/repos/${OWNER}/${REPO}/contents/${FILENAME}`
+  );
+  const currentContent = Buffer.from(content.data.content, "base64");
+  const picture =
+    front_default === null
+      ? ""
+      : `![${name} picture](${front_default} '${name} picture')`;
+  return {
+    content: `${picture}<br>${name}<br>${currentContent}`,
+    currentPoke: name
+  };
+};
+
 schedule(
   CRON_SCHEDULE as string,
   async () => {
