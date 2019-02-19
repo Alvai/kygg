@@ -16,48 +16,73 @@ const {
 interface ICommit {
   parents: string[];
   tree: string;
-  message: string;
+  commitMessage: string;
+}
+
+interface ITreeCreation {
+  commitSha: string;
+  content: string;
+  position: string;
 }
 
 const github = axios.create({
-  baseURL: `https://api.github.com/repos/${OWNER}/${REPO}/git/`,
+  baseURL: `https://api.github.com/repos/${OWNER}/${REPO}/`,
   headers: {
     Authorization: `token ${OAUTH_GITHUB}`
   }
 });
 
 const getHeadMaster = async () => {
-  const headMaster = await github.get(`refs/heads/${BRANCH}`);
+  const headMaster = await github.get(`git/refs/${BRANCH}`);
   return headMaster.data;
 };
 
 const getCommit = async (commitSha: string) => {
-  const selectedCommit = await github.get(`commits/${commitSha}`);
+  const selectedCommit = await github.get(`git/commits/${commitSha}`);
   return selectedCommit.data;
 };
 
-const createTree = async (lastCommitSHA: string, content: string) => {
+const getFileContent = async (filename: string = FILENAME as string) => {
+  const content = await github.get(`contents/${filename}`);
+  const decodedContent = Buffer.from(content.data.content, "base64");
+  return decodedContent;
+};
+
+const createTree = async ({
+  commitSha = "",
+  content = "",
+  position = "prefix"
+}: ITreeCreation) => {
+  const currentContent = await getFileContent();
+  const prefixContent = position === "prefix" ? content : "";
+  const suffixContent = position === "suffix" ? content : "";
+  const completeContent = `${prefixContent}${currentContent}${suffixContent}`;
   const tree = {
-    base_tree: lastCommitSHA,
+    base_tree: commitSha,
     tree: [
       {
-        content,
+        content: completeContent,
         mode: "100644",
         path: FILENAME
       }
     ]
   };
-  const newTree = await github.post(`trees`, tree);
+  const newTree = await github.post(`git/trees`, tree);
   return newTree.data;
 };
 
 const createCommit = async (commitContent: ICommit) => {
-  const newCommit = await github.post(`commits`, commitContent);
+  const commitInfo = {
+    message: commitContent.commitMessage,
+    parents: commitContent.parents,
+    tree: commitContent.tree
+  };
+  const newCommit = await github.post(`git/commits`, commitInfo);
   return newCommit.data;
 };
 
 const push = async (sha: string) => {
-  const pushed = await github.patch(`refs/${BRANCH}`, {
+  const pushed = await github.patch(`git/refs/${BRANCH}`, {
     sha
   });
   return pushed.data;
@@ -71,16 +96,12 @@ const getPokemon = async () => {
     name,
     sprites: { front_default }
   } = res.data;
-  const content = await github.get(
-    `/repos/${OWNER}/${REPO}/contents/${FILENAME}`
-  );
-  const currentContent = Buffer.from(content.data.content, "base64");
   const picture =
     front_default === null
       ? ""
       : `![${name} picture](${front_default} '${name} picture')`;
   return {
-    content: `${picture}<br>${name}<br>${currentContent}`,
+    content: `${picture}<br>${name}<br>`,
     currentPoke: name
   };
 };
@@ -92,11 +113,16 @@ schedule(
     for (let index = 0; index <= numberOfCommits; index++) {
       const headMaster = await getHeadMaster();
       const lastCommit = await getCommit(headMaster.object.sha);
-      // At this point, you can create any function you want to provide the content for the commit
+      // you can create any function you want to provide the content for the commit and th commit message
+      // Mine is getting pokemons
       const pokemon = await getPokemon();
-      const newTree = await createTree(lastCommit.tree.sha, pokemon.content);
+      const newTree = await createTree({
+        commitSha: lastCommit.tree.sha,
+        content: pokemon.content,
+        position: "prefix"
+      });
       const addedCommit = await createCommit({
-        message: `${pokemon.currentPoke} said Hi !`,
+        commitMessage: `${pokemon.currentPoke} said Hi !`,
         parents: [headMaster.object.sha],
         tree: newTree.sha
       });
