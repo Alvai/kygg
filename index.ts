@@ -1,5 +1,5 @@
 import axios from "axios";
-import dotenv from "dotenv";
+import * as dotenv from "dotenv";
 import { schedule } from "node-cron";
 
 dotenv.config();
