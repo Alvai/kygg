@@ -83,7 +83,8 @@ const createCommit = async (commitContent: ICommit) => {
 
 const push = async (sha: string) => {
   const pushed = await github.patch(`git/refs/${BRANCH}`, {
-    sha
+    sha,
+    force: true
   });
   return pushed.data;
 };
