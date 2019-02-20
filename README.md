@@ -1,6 +1,8 @@
 # make-github-green-again
 
-Scheduled functions in nodejs
+Make your github contribs green again !
+
+this is a little side project to learn how cron works, it is heavily inspired by [Github Gardener](https://github.com/alexandersideris/github-gardener-bot)
 
 ## Table of Contents
 
