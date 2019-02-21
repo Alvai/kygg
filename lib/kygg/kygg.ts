@@ -63,6 +63,7 @@ export interface IRef {
     url: string;
   };
 }
+
 export interface ITreeCreation {
   commitSha: string;
   content: string;
@@ -83,6 +84,7 @@ export interface ITree {
     }
   ];
 }
+
 export class Kygg {
   private githubInstance: AxiosInstance;
   private oauthGithub: string;
