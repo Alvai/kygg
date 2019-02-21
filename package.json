@@ -1,11 +1,12 @@
 {
   "name": "kygg",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "Keep your github green",
   "main": "dist/lib/kygg/index.js",
   "types": "dist/lib/kygg/index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "prepare": "rm -rf dist/ && npm run build"
   },
   "repository": {
     "type": "git",
