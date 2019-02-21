@@ -20,7 +20,7 @@ const getPokemon = async (): Promise<ICommitContent> => {
       : `![${name} picture](${front_default} '${name} picture')`;
   //
   return {
-    commitContent: `${picture}<br>${name} has <br>`,
+    commitContent: `${picture}<br>${name}<br>`,
     commitName: `${name} said Hi !`
   };
 };
