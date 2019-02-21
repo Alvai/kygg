@@ -6,6 +6,11 @@ export interface ICommitContent {
   commitName: string;
 }
 
+export enum contentPosition {
+  prefix = "prefix",
+  suffix = "suffix"
+}
+
 export interface IKyggOptions {
   oauthGithub: string;
   githubURL: string;
@@ -13,6 +18,7 @@ export interface IKyggOptions {
   filename: string;
   cronSchedule: string;
   contentCallback: () => ICommitContent | Promise<ICommitContent>;
+  position?: contentPosition;
 }
 
 export interface ICommitCreation {
@@ -86,49 +92,35 @@ export interface ITree {
 }
 
 export class Kygg {
+  private config: IKyggOptions;
   private githubInstance: AxiosInstance;
-  private oauthGithub: string;
-  private githubURL: string;
-  private branch: string;
-  private filename: string;
-  private cronSchedule: string;
-  private contentCallback: () => ICommitContent | Promise<ICommitContent>;
-
   constructor(options: IKyggOptions) {
-    const {
-      oauthGithub,
-      githubURL,
-      branch,
-      filename,
-      cronSchedule,
-      contentCallback
-    } = options;
-    this.oauthGithub = oauthGithub;
-    this.githubURL = githubURL;
-    this.branch = branch;
-    this.filename = filename;
-    this.cronSchedule = cronSchedule;
-    this.contentCallback = contentCallback;
-
+    if (!options.position) {
+      options.position = contentPosition.prefix;
+    }
+    this.config = options;
     this.githubInstance = this.createGithubInstance(
-      this.githubURL,
-      this.oauthGithub
+      this.config.githubURL,
+      this.config.oauthGithub
     );
   }
 
   public start(): void {
     schedule(
-      this.cronSchedule as string,
+      this.config.cronSchedule as string,
       async () => {
         const numberOfCommits = Math.floor(Math.random() * 8) + 1;
         for (let index = 0; index <= numberOfCommits; index++) {
           const headMaster = await this.getHeadMaster();
           const lastCommit = await this.getCommit(headMaster.object.sha);
-          const { commitContent, commitName } = await this.contentCallback();
+          const {
+            commitContent,
+            commitName
+          } = await this.config.contentCallback();
           const newTree = await this.createTree({
             commitSha: lastCommit.tree.sha,
             content: commitContent,
-            position: "prefix"
+            position: contentPosition[this.config.position!]
           });
           const addedCommit = await this.createCommit({
             commitMessage: commitName,
@@ -156,7 +148,9 @@ export class Kygg {
   }
 
   private async getHeadMaster(): Promise<IRef> {
-    const headMaster = await this.githubInstance.get(`git/refs/${this.branch}`);
+    const headMaster = await this.githubInstance.get(
+      `git/refs/${this.config.branch}`
+    );
     return headMaster.data;
   }
 
@@ -168,7 +162,7 @@ export class Kygg {
   }
 
   private async getFileContent(
-    filename: string = this.filename as string
+    filename: string = this.config.filename as string
   ): Promise<Buffer> {
     const content = await this.githubInstance.get(`contents/${filename}`);
     const decodedContent = Buffer.from(content.data.content, "base64");
@@ -190,7 +184,7 @@ export class Kygg {
         {
           content: completeContent,
           mode: "100644",
-          path: this.filename
+          path: this.config.filename
         }
       ]
     };
@@ -209,10 +203,13 @@ export class Kygg {
   }
 
   private async push(sha: string): Promise<void> {
-    const pushed = await this.githubInstance.patch(`git/refs/${this.branch}`, {
-      force: true,
-      sha
-    });
+    const pushed = await this.githubInstance.patch(
+      `git/refs/${this.config.branch}`,
+      {
+        force: true,
+        sha
+      }
+    );
     return pushed.data;
   }
 }
