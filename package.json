@@ -1,9 +1,9 @@
 {
   "name": "kygg",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Keep your github green",
-  "main": "dist/lib/index.js",
-  "types": "dist/lib/index.d.ts",
+  "main": "dist/lib/kygg/index.js",
+  "types": "dist/lib/kygg/index.d.ts",
   "scripts": {
     "build": "tsc"
   },
