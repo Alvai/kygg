@@ -1,16 +1,17 @@
 {
-  "name": "make-github-green-again",
+  "name": "kygg",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Keep your github green",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Alvai/make-github-green-again.git"
   },
-  "author": "",
+  "author": "Ivan Milosevic",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Alvai/make-github-green-again/issues"
@@ -28,6 +29,7 @@
     "prettier": "^1.16.4",
     "tslint": "^5.12.1",
     "tslint-config-prettier": "^1.18.0",
-    "tslint-plugin-prettier": "^2.0.1"
+    "tslint-plugin-prettier": "^2.0.1",
+    "typescript": "^3.3.3"
   }
 }
