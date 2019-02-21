@@ -1,17 +1,21 @@
 // import Kygg
 import { Kygg } from "../lib/kygg";
 
+import * as dotenv from "dotenv";
+
+dotenv.config();
+
 // import your custom function
 import { getPokemon } from "./pokemon";
 
 // set your options
 const options = {
-  branch: "BRANCH_FULL_NAME", // complete name of branch
+  branch: process.env.BRANCH as string, // complete name of branch
   contentCallback: getPokemon, // function that provides commitContent && commitName
-  cronSchedule: "*/1 * * * *", // cron string
-  filename: "FILENAME", // file to update
-  githubURL: "OWNER/REPO_NAME", // complete name of repository (owner/repo_name)
-  oauthGithub: "YOUR_TOKEN" // oauth token from github
+  cronSchedule: process.env.CRON_SCHEDULE as string, // cron string
+  filename: process.env.FILENAME as string, // file to update
+  githubURL: process.env.GITHUB_URL as string, // complete name of repository (owner/repo_name)
+  oauthGithub: process.env.OAUTH_GITHUB as string // oauth token from github
 };
 
 // create an instance of Kygg
