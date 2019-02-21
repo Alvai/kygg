@@ -1,26 +1,26 @@
 {
-  "name": "make-github-green-again",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "kygg",
+  "version": "1.0.4",
+  "description": "Keep your github green",
+  "main": "dist/lib/kygg/index.js",
+  "types": "dist/lib/kygg/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "prepare": "rm -rf dist/ && npm run build"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Alvai/make-github-green-again.git"
   },
-  "author": "",
+  "author": "Ivan Milosevic",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Alvai/make-github-green-again/issues"
   },
   "homepage": "https://github.com/Alvai/make-github-green-again#readme",
   "dependencies": {
-    "@types/dotenv": "^6.1.0",
     "@types/node-cron": "^2.0.1",
     "axios": "^0.18.0",
-    "dotenv": "^6.2.0",
     "node-cron": "^2.0.3"
   },
   "devDependencies": {
@@ -28,6 +28,7 @@
     "prettier": "^1.16.4",
     "tslint": "^5.12.1",
     "tslint-config-prettier": "^1.18.0",
-    "tslint-plugin-prettier": "^2.0.1"
+    "tslint-plugin-prettier": "^2.0.1",
+    "typescript": "^3.3.3"
   }
 }

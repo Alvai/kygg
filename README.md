@@ -1,6 +1,6 @@
-# make-github-green-again
+# Kygg
 
-Make your github contribs green again !
+Keep your github green !
 
 this is a little side project to learn how cron works, it is heavily inspired by [Github Gardener](https://github.com/alexandersideris/github-gardener-bot)
 
@@ -16,28 +16,35 @@ this is a little side project to learn how cron works, it is heavily inspired by
 Clone the project and install the dependencies:
 
 ```bash
-npm i
-```
-
-Create a `.env` file with this template:
-
-```bash
-OAUTH_GITHUB=YOUR_GITHUB_OAUTH_TOKEN
-OWNER=YOUR_GITHUB_USERNAME
-REPO=YOUR_DESTINATION_REPO
-BRANCH=YOUR_BRANCH
-FILENAME=FILE_TO_EDIT
-CRON_SCHEDULE=CRON_SCHEDULE_STRING # https://www.npmjs.com/package/node-cron
+npm i kygg
 ```
 
 ## Usage
 
-Compile the typescript file and run the js file:
+!!! FULL DOCUMENTATION NOT WRITTEN YET !!!
 
-```bash
-npm i -g typescript
-tsc index.ts
-node index.js
+require kygg in your file and create an instance:
+
+```js
+// import Kygg
+import { Kygg } from "../lib/kygg";
+
+// set your options
+const options = {
+  branch: "BRANCH_FULL_NAME", // complete name of branch
+  contentCallback: functionThatReturnsContent, // function that provides commitContent && commitName
+  cronSchedule: "*/1 * * * *", // cron string
+  filename: "FILENAME", // file to update
+  githubURL: "OWNER/REPO_NAME", // complete name of repository (owner/repo_name)
+  oauthGithub: "YOUR_TOKEN" // oauth token from github
+};
+
+// create an instance of Kygg
+const instance = new Kygg(options);
+
+// start the cron
+instance.start();
+
 ```
 
 ## Support
