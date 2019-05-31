@@ -27,7 +27,7 @@ require kygg in your file and create an instance:
 
 ```js
 // import Kygg
-import { Kygg } from "../lib/kygg";
+import { Kygg } from "kygg";
 
 // set your options
 const options = {
